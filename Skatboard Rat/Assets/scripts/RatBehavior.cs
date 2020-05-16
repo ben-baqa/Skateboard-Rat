@@ -6,22 +6,22 @@ using UnityEngine.UI;
 public class RatBehavior : MonoBehaviour
 {
     public float pushForce, returnForce, cushionForce;
-    public float JumpForce, speed;
-    public int resetDelay;
+    public float JumpForce, speed, brakeForce;
+    public int deathSlideDelay, score;
 
     private Animator anim;
     private Rigidbody2D rb;
     private Transform tr;
     private HitBox hBox;
     private Text scoreDisplay;
-    private ParticleSystem pSystem;
     private Manager manager;
 
     public Animator road;
     public GameObject deathBurst;
 
-    private int score, resetTimer;
-    private bool jump, push, dead, started;
+    private float realSpeed;
+    private int resetTimer;
+    private bool jump, push, brake, dead, started, canReset;
     
     void Start()
     {
@@ -30,10 +30,11 @@ public class RatBehavior : MonoBehaviour
         tr = GetComponent<Transform>();
         hBox = GetComponentInChildren<HitBox>();
         scoreDisplay = GameObject.Find("Score").GetComponent<Text>();
-        pSystem = GameObject.Find("Trail(Clone)").GetComponent<ParticleSystem>();
         road = GameObject.Find("Road").GetComponent<Animator>();
         manager = GameObject.Find("Manager").GetComponent<Manager>();
         Physics2D.IgnoreLayerCollision(8, 8, true);
+        speed = 0;
+        realSpeed = 0;
         score = 0;
         resetTimer = 0;
     }
@@ -50,10 +51,24 @@ public class RatBehavior : MonoBehaviour
             if(rb.velocity.y == 0)
             {
                 started = true;
-                speed = 1;
             }
         }
-        if (resetTimer > resetDelay && (jump || push))
+        if(resetTimer >= deathSlideDelay)
+        {
+            if(resetTimer == deathSlideDelay)
+            {
+                rb.Sleep();
+                GetComponent<BoxCollider2D>().enabled = false;
+                road.SetFloat("speed", 1f);
+            }
+            tr.position = new Vector2(tr.position.x - 0.2f, tr.position.y);
+            if(tr.position.x < -30)
+            {
+                road.SetFloat("speed", 0);
+                canReset = true;
+            }
+        }
+        if (canReset && (jump || push))
         {
             manager.Reset();
         }
@@ -61,6 +76,10 @@ public class RatBehavior : MonoBehaviour
 
     private void FixedUpdate()
     {
+        speed = realSpeed;
+        float v = rb.velocity.x/50;
+        speed += v;
+        Debug.Log("Speed = " + realSpeed);
         if (!dead)
         {
             ExecuteControls();
@@ -84,6 +103,10 @@ public class RatBehavior : MonoBehaviour
         {
             push = true;
         }
+        if (Input.GetKeyDown("a") || Input.GetKeyDown("left"))
+        {
+            brake = true;
+        }
 
         if (Input.GetKeyUp("w") || Input.GetKeyUp("space") || Input.GetKeyUp("up"))
         {
@@ -92,6 +115,10 @@ public class RatBehavior : MonoBehaviour
         if (Input.GetKeyUp("d") || Input.GetKeyUp("right"))
         {
             push = false;
+        }
+        if (Input.GetKeyUp("a") || Input.GetKeyUp("left"))
+        {
+            brake = false;
         }
     }
 
@@ -107,6 +134,10 @@ public class RatBehavior : MonoBehaviour
         {
             push = false;
             anim.SetTrigger("push");
+        }
+        if (brake)
+        {
+            rb.AddForce(brakeForce * Vector2.left);
         }
     }
 
@@ -135,7 +166,12 @@ public class RatBehavior : MonoBehaviour
         if (!dead)
         {
             rb.AddForce(pushForce * Vector2.right, ForceMode2D.Impulse);
-            speed *= 1.05f;
+            if(realSpeed == 0)
+            {
+                realSpeed = 1;
+            }
+            realSpeed *= 1.05f;
+            speed = realSpeed;
             road.SetFloat("speed", speed);
         }
     }
@@ -158,6 +194,7 @@ public class RatBehavior : MonoBehaviour
             Debug.Log("Get Smacked Nerd");
             dead = true;
             speed = 0;
+            realSpeed = 0;
             road.SetFloat("speed", speed);
             anim.SetTrigger("fall");
             rb.velocity = new Vector2(0, -50);

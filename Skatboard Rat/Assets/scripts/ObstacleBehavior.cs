@@ -20,7 +20,7 @@ public class ObstacleBehavior : MonoBehaviour
         {
             Destroy(gameObject);
         }
-        tr.position = new Vector2(tr.position.x - velocity * (0.2f + rat.speed), tr.position.y);
+        tr.position = new Vector2(tr.position.x - velocity * (0.2f + rat.speed/2), tr.position.y);
 
         if(rat == null)
         {

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Manager : MonoBehaviour
 {
@@ -8,9 +9,12 @@ public class Manager : MonoBehaviour
     public bool reset;
 
     private GameObject ratInst, spawnInst, trailInst;
+    private Text bestScoreDisplay;
+    private int bestScore;
     
     void Start()
     {
+        bestScoreDisplay = GameObject.Find("Best Score").GetComponent<Text>();
         reset = false;
         Reset();
     }
@@ -34,7 +38,12 @@ public class Manager : MonoBehaviour
 
     public void OnDeath()
     {
-
+        int num = ratInst.GetComponent<RatBehavior>().score;
+        if (num > bestScore)
+        {
+            bestScore = num;
+            bestScoreDisplay.text = num.ToString();
+        }
         Destroy(spawnInst);
         Destroy(trailInst);
     }

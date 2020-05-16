@@ -45,4 +45,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Obstacles:
   - {fileID: 1276129847266795624, guid: f97a1691684ead54892dade01992f1d5, type: 3}
-  delay: 200
+  delay: 100
+  initialDelay: 0

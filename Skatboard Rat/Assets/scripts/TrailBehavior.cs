@@ -20,11 +20,12 @@ public class TrailBehavior : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (rat != null)
+        if(rat == null)
         {
-            Vector2 ratPos = rat.position;
-            shape.position = new Vector2(ratPos.x + 18, ratPos.y + 2);
+            rat = GameObject.Find("Rat(Clone)").GetComponent<Transform>();
         }
+        Vector2 ratPos = rat.position;
+        shape.position = new Vector2(ratPos.x + 18, ratPos.y + 2);
     }
 
     public void setReferencePoint()
