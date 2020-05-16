@@ -12,7 +12,7 @@ public class ObstacleSpawner : MonoBehaviour
 
     void Start()
     {
-        timer = 0;
+        timer = -350;
     }
 
     private void FixedUpdate()

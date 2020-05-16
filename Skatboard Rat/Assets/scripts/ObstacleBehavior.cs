@@ -7,10 +7,11 @@ public class ObstacleBehavior : MonoBehaviour
     public float velocity;
     private Transform tr;
     private RatBehavior rat;
+
     void Start()
     {
         tr = GetComponent<Transform>();
-        rat = GameObject.Find("Rat").GetComponent<RatBehavior>();
+        rat = GameObject.Find("Rat(Clone)").GetComponent<RatBehavior>();
     }
 
     private void FixedUpdate()
@@ -19,12 +20,17 @@ public class ObstacleBehavior : MonoBehaviour
         {
             Destroy(gameObject);
         }
-        tr.position = new Vector2(tr.position.x - velocity * rat.speed, tr.position.y);
+        tr.position = new Vector2(tr.position.x - velocity * (0.2f + rat.speed), tr.position.y);
+
+        if(rat == null)
+        {
+            rat = GameObject.Find("Rat(Clone)").GetComponent<RatBehavior>();
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("HitBox"))
+        if (collision.CompareTag("HitBox") && rat != null)
         {
             rat.GetHit();
         }

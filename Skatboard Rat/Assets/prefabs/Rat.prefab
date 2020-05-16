@@ -74,7 +74,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 5
   m_Sprite: {fileID: 21300000, guid: 9b0c1877db0e3da419c42c496a3e0af9, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -121,7 +121,10 @@ MonoBehaviour:
   returnForce: 2
   cushionForce: 10
   JumpForce: 42
+  speed: 0
   road: {fileID: 0}
+  deathBurst: {fileID: 1862560945828175725, guid: 2b6dce01e1031a44ca3d1389c5741108,
+    type: 3}
 --- !u!50 &2272194827825917367
 Rigidbody2D:
   serializedVersion: 4

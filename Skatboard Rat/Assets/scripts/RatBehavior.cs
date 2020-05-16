@@ -1,21 +1,27 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class RatBehavior : MonoBehaviour
 {
     public float pushForce, returnForce, cushionForce;
     public float JumpForce, speed;
+    public int resetDelay;
 
     private Animator anim;
     private Rigidbody2D rb;
     private Transform tr;
     private HitBox hBox;
+    private Text scoreDisplay;
+    private ParticleSystem pSystem;
+    private Manager manager;
 
     public Animator road;
+    public GameObject deathBurst;
 
-    private bool jump, push;
-    private bool contraintsReset;
+    private int score, resetTimer;
+    private bool jump, push, dead, started;
     
     void Start()
     {
@@ -23,20 +29,49 @@ public class RatBehavior : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         tr = GetComponent<Transform>();
         hBox = GetComponentInChildren<HitBox>();
+        scoreDisplay = GameObject.Find("Score").GetComponent<Text>();
+        pSystem = GameObject.Find("Trail(Clone)").GetComponent<ParticleSystem>();
+        road = GameObject.Find("Road").GetComponent<Animator>();
+        manager = GameObject.Find("Manager").GetComponent<Manager>();
         Physics2D.IgnoreLayerCollision(8, 8, true);
-        speed = 1;
+        score = 0;
+        resetTimer = 0;
     }
 
     
     private void Update()
     {
-        GetControls();
+        if (started)
+        {
+            GetControls();
+        }
+        else
+        {
+            if(rb.velocity.y == 0)
+            {
+                started = true;
+                speed = 1;
+            }
+        }
+        if (resetTimer > resetDelay && (jump || push))
+        {
+            manager.Reset();
+        }
     }
 
     private void FixedUpdate()
     {
-        ExecuteControls();
-        ResetPosition();
+        if (!dead)
+        {
+            ExecuteControls();
+            ResetPosition();
+        }
+        else
+        {
+            resetTimer++;
+        }
+        score += (int)(speed * speed * speed);
+        scoreDisplay.text = score.ToString();
     }
 
     private void GetControls()
@@ -79,7 +114,6 @@ public class RatBehavior : MonoBehaviour
     {
         if(tr.position.x > -18)
         {
-            contraintsReset = false;
             if (tr.position.x > -17)
             {
                 rb.AddForce(returnForce * (17 + tr.position.x) * Vector2.left, ForceMode2D.Force);
@@ -93,31 +127,40 @@ public class RatBehavior : MonoBehaviour
                 }
             }
         }
-        else if(!contraintsReset)
-        {
-            //rb.constraints = RigidbodyConstraints2D.FreezePositionX;
-            //rb.constraints &= RigidbodyConstraints2D.FreezeRotation;
-            //contraintsReset = true;
-        }
     }
 
 
     private void PushForward()
     {
-        //rb.constraints = RigidbodyConstraints2D.FreezeRotation;
-        rb.AddForce(pushForce * Vector2.right, ForceMode2D.Impulse);
-        speed *= 1.05f;
-        road.SetFloat("speed", speed);
+        if (!dead)
+        {
+            rb.AddForce(pushForce * Vector2.right, ForceMode2D.Impulse);
+            speed *= 1.05f;
+            road.SetFloat("speed", speed);
+        }
     }
 
     private void Jump()
     {
-        hBox.Jump();
-        rb.AddForce(JumpForce * Vector2.up, ForceMode2D.Impulse);
+        if (!dead)
+        {
+            hBox.Jump();
+            rb.AddForce(JumpForce * Vector2.up, ForceMode2D.Impulse);
+        }
     }
 
     public void GetHit()
     {
-        Debug.Log("Get Smacked Nerd");
+        if (!dead)
+        {
+            manager.OnDeath();
+            Instantiate(deathBurst, tr.position, Quaternion.identity);
+            Debug.Log("Get Smacked Nerd");
+            dead = true;
+            speed = 0;
+            road.SetFloat("speed", speed);
+            anim.SetTrigger("fall");
+            rb.velocity = new Vector2(0, -50);
+        }
     }
 }
