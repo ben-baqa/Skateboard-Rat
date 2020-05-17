@@ -4,23 +4,34 @@ using UnityEngine;
 
 public class ObstacleBehavior : MonoBehaviour
 {
-    public float velocity;
+    public float velocity, baseVelocity, sinkSpeed;
+
     private Transform tr;
     private RatBehavior rat;
+
+    private bool sink;
 
     void Start()
     {
         tr = GetComponent<Transform>();
-        rat = GameObject.Find("Rat(Clone)").GetComponent<RatBehavior>();
     }
 
     private void FixedUpdate()
     {
-        if(tr.position.x < -30)
+        if(tr.position.x < -40 || tr.position.y < -15)
         {
             Destroy(gameObject);
         }
-        tr.position = new Vector2(tr.position.x - velocity * (0.2f + rat.speed/2), tr.position.y);
+        float y = tr.position.y;
+        if (sink)
+        {
+            y -= sinkSpeed;
+        }
+        if(rat == null)
+        {
+            rat = GameObject.Find("Rat(Clone)").GetComponent<RatBehavior>();
+        }
+        tr.position = new Vector2(tr.position.x - velocity * (baseVelocity + rat.speed / 2), y);
 
         if(rat == null)
         {
@@ -34,5 +45,10 @@ public class ObstacleBehavior : MonoBehaviour
         {
             rat.GetHit();
         }
+    }
+
+    public void OnDeath()
+    {
+        sink = true;
     }
 }

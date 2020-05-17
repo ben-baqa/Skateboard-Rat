@@ -79,7 +79,6 @@ public class RatBehavior : MonoBehaviour
         speed = realSpeed;
         float v = rb.velocity.x/50;
         speed += v;
-        Debug.Log("Speed = " + realSpeed);
         if (!dead)
         {
             ExecuteControls();
@@ -143,11 +142,11 @@ public class RatBehavior : MonoBehaviour
 
     private void ResetPosition()
     {
-        if(tr.position.x > -18)
+        if(tr.position.x > -29)
         {
-            if (tr.position.x > -17)
+            if (tr.position.x > -27)
             {
-                rb.AddForce(returnForce * (17 + tr.position.x) * Vector2.left, ForceMode2D.Force);
+                rb.AddForce(returnForce * (27 + tr.position.x) * Vector2.left, ForceMode2D.Force);
             }
             else
             {

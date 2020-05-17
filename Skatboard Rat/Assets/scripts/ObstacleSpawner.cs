@@ -20,9 +20,9 @@ public class ObstacleSpawner : MonoBehaviour
     {
         if(timer > delay)
         {
-            if ((int)Random.Range(0, 20) == 8)
+            if ((int)Random.Range(0, 50) == 8)
             {
-                SpawnObject(0);
+                SpawnObject((int)Random.Range(0, Obstacles.Length));
                 timer = 0;
             }
         }
@@ -31,6 +31,6 @@ public class ObstacleSpawner : MonoBehaviour
 
     private void SpawnObject(int n)
     {
-        Instantiate(Obstacles[0]);
+        Instantiate(Obstacles[n]);
     }
 }

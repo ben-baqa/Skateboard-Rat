@@ -31,7 +31,8 @@ public class Manager : MonoBehaviour
     public void Reset()
     {
         Destroy(ratInst);
-        ratInst = Instantiate(rat, new Vector2(-16, 20), Quaternion.identity);
+        //ratInst = Instantiate(rat, new Vector2(-16, 20), Quaternion.identity);
+        ratInst = Instantiate(rat);
         spawnInst = Instantiate(oSpawner);
         trailInst = Instantiate(trail);//.GetComponent<TrailBehavior>().rat = ratInst.transform;
     }
@@ -46,5 +47,10 @@ public class Manager : MonoBehaviour
         }
         Destroy(spawnInst);
         Destroy(trailInst);
+        GameObject[] tobeDestroyed = GameObject.FindGameObjectsWithTag("destroyOnDeath");
+        foreach (GameObject item in tobeDestroyed)
+        {
+            item.gameObject.GetComponent<ObstacleBehavior>().OnDeath();
+        }
     }
 }
