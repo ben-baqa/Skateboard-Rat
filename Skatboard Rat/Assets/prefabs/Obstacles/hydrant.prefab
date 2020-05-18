@@ -127,6 +127,7 @@ MonoBehaviour:
   velocity: 1.3
   baseVelocity: 0
   sinkSpeed: 1.1
+  burst: {fileID: 734465024870633768, guid: 49e13096206bac84380bd1c9d50a8e13, type: 3}
 --- !u!95 &1412297142791433461
 Animator:
   serializedVersion: 3

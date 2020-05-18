@@ -146,6 +146,7 @@ MonoBehaviour:
   velocity: 1.2
   baseVelocity: 0.4
   sinkSpeed: 1.2
+  burst: {fileID: 734465024870633768, guid: 49e13096206bac84380bd1c9d50a8e13, type: 3}
 --- !u!1 &8452207900333603293
 GameObject:
   m_ObjectHideFlags: 0

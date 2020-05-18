@@ -5,6 +5,7 @@ using UnityEngine;
 public class ObstacleBehavior : MonoBehaviour
 {
     public float velocity, baseVelocity, sinkSpeed;
+    public GameObject burst;
 
     private Transform tr;
     private RatBehavior rat;
@@ -20,6 +21,10 @@ public class ObstacleBehavior : MonoBehaviour
     {
         if(tr.position.x < -40 || tr.position.y < -25)
         {
+            if (tr.position.x < -40)
+            {
+                Instantiate(burst);
+            }
             Destroy(gameObject);
         }
         float y = tr.position.y;
