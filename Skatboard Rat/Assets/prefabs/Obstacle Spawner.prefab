@@ -46,5 +46,6 @@ MonoBehaviour:
   Obstacles:
   - {fileID: 1276129847266795624, guid: f97a1691684ead54892dade01992f1d5, type: 3}
   - {fileID: 3506739615551407612, guid: 46c81b5cfacfc4c498884a3f3e04e858, type: 3}
+  - {fileID: 1412297142791433450, guid: c7fcad6913ed5d847bbe146642bc4f17, type: 3}
   delay: 100
   initialDelay: 0

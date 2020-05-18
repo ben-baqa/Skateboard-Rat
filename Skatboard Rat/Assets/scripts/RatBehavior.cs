@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class RatBehavior : MonoBehaviour
 {
     public float pushForce, returnForce, cushionForce;
-    public float JumpForce, speed, brakeForce;
+    public float JumpForce, speed, brakeForce, deathSlideSpeed, speedDecayFactor, scoreMultiplier;
     public int deathSlideDelay, score;
 
     private Animator anim;
@@ -19,7 +19,7 @@ public class RatBehavior : MonoBehaviour
     public Animator road;
     public GameObject deathBurst;
 
-    private float realSpeed;
+    private float realSpeed, realScore;
     private int resetTimer;
     private bool jump, push, brake, dead, started, canReset;
     
@@ -57,12 +57,15 @@ public class RatBehavior : MonoBehaviour
         {
             if(resetTimer == deathSlideDelay)
             {
-                rb.Sleep();
-                GetComponent<BoxCollider2D>().enabled = false;
-                road.SetFloat("speed", 1f);
+                Destroy(rb);
+                //rb.constraints = RigidbodyConstraints2D.FreezeAll;
+                //rb.Sleep();
+                Destroy(GetComponent<BoxCollider2D>());
+                //GetComponent<BoxCollider2D>().enabled = false;
+                road.SetFloat("speed", deathSlideSpeed);
             }
-            tr.position = new Vector2(tr.position.x - 0.2f, tr.position.y);
-            if(tr.position.x < -30)
+            tr.position = new Vector2(tr.position.x - 1.8f, tr.position.y);
+            if(tr.position.x < -40)
             {
                 road.SetFloat("speed", 0);
                 canReset = true;
@@ -76,11 +79,18 @@ public class RatBehavior : MonoBehaviour
 
     private void FixedUpdate()
     {
-        speed = realSpeed;
-        float v = rb.velocity.x/50;
-        speed += v;
+        //speed = realSpeed;
+        //float v = rb.velocity.x/50;
+        //speed += v;
+        speed += (realSpeed - speed) / 10;
         if (!dead)
         {
+            road.SetFloat("speed", realSpeed);
+            if (started && speed >= 1)
+            {
+                Debug.Log("Speed: " + speed + "X: " + tr.position.x);
+                tr.position = new Vector2(-49 + speed * 20, tr.position.y);
+            }
             ExecuteControls();
             ResetPosition();
         }
@@ -88,7 +98,8 @@ public class RatBehavior : MonoBehaviour
         {
             resetTimer++;
         }
-        score += (int)(speed * speed * speed);
+        realScore += speed * speed * speed * scoreMultiplier;
+        score = (int)realScore;
         scoreDisplay.text = score.ToString();
     }
 
@@ -136,7 +147,8 @@ public class RatBehavior : MonoBehaviour
         }
         if (brake)
         {
-            rb.AddForce(brakeForce * Vector2.left);
+            realSpeed /= brakeForce;
+            //rb.AddForce(brakeForce * Vector2.left);
         }
     }
 
@@ -144,18 +156,19 @@ public class RatBehavior : MonoBehaviour
     {
         if(tr.position.x > -29)
         {
-            if (tr.position.x > -27)
-            {
-                rb.AddForce(returnForce * (27 + tr.position.x) * Vector2.left, ForceMode2D.Force);
-            }
-            else
-            {
-                float s = rb.velocity.x;
-                if (s < 0)
-                {
-                    rb.AddForce(cushionForce * Mathf.Abs(s) * Vector2.right, ForceMode2D.Force);
-                }
-            }
+            realSpeed /= speedDecayFactor;
+            //if (tr.position.x > -27)
+            //{
+            //    rb.AddForce(returnForce * (27 + tr.position.x) * Vector2.left, ForceMode2D.Force);
+            //}
+            //else
+            //{
+            //    float s = rb.velocity.x;
+            //    if (s < 0)
+            //    {
+            //        rb.AddForce(cushionForce * Mathf.Abs(s) * Vector2.right, ForceMode2D.Force);
+            //    }
+            //}
         }
     }
 
@@ -164,14 +177,14 @@ public class RatBehavior : MonoBehaviour
     {
         if (!dead)
         {
-            rb.AddForce(pushForce * Vector2.right, ForceMode2D.Impulse);
-            if(realSpeed == 0)
+            //rb.AddForce(pushForce * Vector2.right, ForceMode2D.Impulse);
+            if (realSpeed == 0)
             {
                 realSpeed = 1;
             }
-            realSpeed *= 1.05f;
-            speed = realSpeed;
-            road.SetFloat("speed", speed);
+            realSpeed *= pushForce;
+            //speed = realSpeed;
+            road.SetFloat("speed", realSpeed);
         }
     }
 

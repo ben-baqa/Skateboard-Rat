@@ -18,7 +18,7 @@ public class ObstacleBehavior : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if(tr.position.x < -40 || tr.position.y < -15)
+        if(tr.position.x < -40 || tr.position.y < -25)
         {
             Destroy(gameObject);
         }
